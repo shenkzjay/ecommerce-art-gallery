@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { getAuthors } from "../actions/getauthors";
+import { getAllRoutes } from "../actions/getAllRoutes";
 
 export interface authorTypes {
   _id: number;
@@ -63,6 +64,8 @@ export default function CreateAuthor() {
       });
 
       const data = await response.json();
+
+      // handleGetAllAuthors();
 
       setAllAuthors((prevAuthors) => [...prevAuthors, data.newAuthor]);
 
