@@ -5,6 +5,16 @@ import { authorTypes } from "../create-author/page";
 import { getAllRoutes } from "../actions/getAllRoutes";
 import { CategoryProps } from "../create-category/page";
 
+export interface ProductTypes {
+  _id: number;
+  product_title: string;
+  product_about: string;
+  product_image: string;
+  product_date: Date;
+  product_author: authorTypes;
+  product_category: CategoryProps;
+}
+
 export default function CreateProduct() {
   const [allauthors, setAllAuthors] = useState<authorTypes[]>([]);
   const [allCategories, setAllCategories] = useState<CategoryProps[]>([]);
@@ -12,6 +22,9 @@ export default function CreateProduct() {
   const [fileUpload, setFileUpload] = useState<File | null>(null);
   const [selectCategory, setSelectCategory] = useState("");
   const [selectAuthor, setSelectAuthor] = useState("");
+  const [allProduct, setAllProduct] = useState<ProductTypes[]>([]);
+
+  console.log("allproducts", allProduct);
 
   const handleGetAllAuthors = async () => {
     const allRoutes = await getAllRoutes();
@@ -20,10 +33,13 @@ export default function CreateProduct() {
 
     const categories = allRoutes.categories;
 
+    const products = allRoutes.products;
+
     console.log(authors, "authors");
 
     setAllAuthors(authors);
     setAllCategories(categories);
+    setAllProduct(products);
   };
 
   useEffect(() => {
@@ -56,6 +72,8 @@ export default function CreateProduct() {
       });
 
       const response = await newProduct.json();
+
+      setAllProduct((prev) => [...prev, response.product]);
 
       console.log(response, "products");
     }
@@ -140,6 +158,23 @@ export default function CreateProduct() {
           Create products
         </button>
       </form>
+      <section>
+        <h4>All products</h4>
+        <ul className="grid gap-4">
+          {allProduct && allProduct.length > 0
+            ? allProduct.map((product, index) => (
+                <li
+                  key={product._id}
+                  className="flex flex-col gap-4 border p-4 bg-[#f4f4f4] rounded-[20px]"
+                >
+                  <p className="text-lg font-semibold">{product.product_title}</p>
+                  <p className="text-slate-400">{product?.product_author?.artist_name}</p>
+                  <p>{product?.product_category?.categoryName}</p>
+                </li>
+              ))
+            : ""}
+        </ul>
+      </section>
     </div>
   );
 }

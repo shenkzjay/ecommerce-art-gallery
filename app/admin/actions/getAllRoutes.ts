@@ -6,9 +6,9 @@ export const getAllRoutes = async () => {
 
     const response = await allroutes.json();
 
-    return response;
-
     console.log(response, "all routes");
+
+    return response;
   } catch (error) {
     console.error(error);
   }
