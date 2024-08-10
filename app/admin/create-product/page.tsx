@@ -4,6 +4,8 @@ import { useEffect, useState, useRef } from "react";
 import { authorTypes } from "../create-author/page";
 import { getAllRoutes } from "../actions/getAllRoutes";
 import { CategoryProps } from "../create-category/page";
+import { DeleteProduct } from "../actions/deleteProduct.";
+import Image from "next/image";
 
 export interface ProductTypes {
   _id: number;
@@ -13,16 +15,20 @@ export interface ProductTypes {
   product_date: Date;
   product_author: authorTypes;
   product_category: CategoryProps;
+  imageUrl: string;
 }
 
 export default function CreateProduct() {
   const [allauthors, setAllAuthors] = useState<authorTypes[]>([]);
   const [allCategories, setAllCategories] = useState<CategoryProps[]>([]);
   const formRef = useRef<HTMLFormElement | null>(null);
-  const [fileUpload, setFileUpload] = useState<File | null>(null);
+  const [fileUpload, setFileUpload] = useState<string | Blob>("");
   const [selectCategory, setSelectCategory] = useState("");
   const [selectAuthor, setSelectAuthor] = useState("");
   const [allProduct, setAllProduct] = useState<ProductTypes[]>([]);
+  const deleteButtonRef = useRef<HTMLDialogElement | null>(null);
+  const [currentIndex, setCurrentIndex] = useState<number | null>(null);
+  const [seletedProduct, setSelectedProduct] = useState<ProductTypes | null>(null);
 
   console.log("allproducts", allProduct);
 
@@ -52,30 +58,22 @@ export default function CreateProduct() {
     if (formRef.current) {
       const formData = new FormData(formRef.current);
 
-      const productData = {
-        product_title: formData.get("product_title"),
-        product_about: formData.get("product_about"),
-        product_date: formData.get("product_date"),
-        product_category: selectCategory,
-        product_author: selectAuthor,
-        product_image: JSON.stringify(fileUpload),
-      };
+      // formData.append("product_image", fileUpload);
+      formData.append("product_category", selectCategory);
+      formData.append("product_author", selectAuthor);
 
-      console.log(productData, "productData");
+      console.log(formData, "productData");
 
       const newProduct = await fetch("http://localhost:8001/product", {
-        headers: {
-          "Content-Type": "application/json",
-        },
         method: "POST",
-        body: JSON.stringify(productData),
+        body: formData,
       });
 
       const response = await newProduct.json();
 
       setAllProduct((prev) => [...prev, response.product]);
 
-      console.log(response, "products");
+      console.log("products life", response.product.imageUrl);
     }
   };
 
@@ -93,11 +91,40 @@ export default function CreateProduct() {
     setSelectAuthor(e.target.value);
   };
 
-  console.log(selectAuthor, selectCategory);
+  const handleOpenDeleteProductModal = (index: number) => {
+    const product = allProduct[index];
+    setSelectedProduct(product);
+    setCurrentIndex(index);
+
+    if (deleteButtonRef.current) {
+      deleteButtonRef?.current?.showModal();
+    }
+  };
+
+  const handleDeleteProduct = async () => {
+    if (currentIndex !== null) {
+      const id = allProduct[currentIndex]._id;
+
+      const deleteItem = await DeleteProduct(id);
+
+      setAllProduct((prevProducts) => prevProducts.filter((product) => product._id !== id));
+
+      console.log(deleteItem);
+
+      handleCloseModal();
+    }
+  };
+
+  const handleCloseModal = () => {
+    if (deleteButtonRef.current) {
+      deleteButtonRef.current.close();
+      setSelectedProduct(null);
+    }
+  };
   return (
     <div>
       CreateProduct
-      <form className="flex flex-col md:w-1/3 gap-4" ref={formRef}>
+      <form className="flex flex-col md:w-1/3 gap-4" ref={formRef} encType="multipart/form-data">
         <input
           type="text"
           className="border px-4 py-2 rounded-md"
@@ -164,17 +191,51 @@ export default function CreateProduct() {
           {allProduct && allProduct.length > 0
             ? allProduct.map((product, index) => (
                 <li
-                  key={product._id}
-                  className="flex flex-col gap-4 border p-4 bg-[#f4f4f4] rounded-[20px]"
+                  key={product?._id}
+                  className="flex flex-row justify-between gap-4 border p-4 bg-[#f4f4f4] rounded-[20px]"
                 >
-                  <p className="text-lg font-semibold">{product.product_title}</p>
-                  <p className="text-slate-400">{product?.product_author?.artist_name}</p>
-                  <p>{product?.product_category?.categoryName}</p>
+                  <div>
+                    <img
+                      src={product?.imageUrl ? product?.imageUrl : ""}
+                      width={100}
+                      height={100}
+                      alt=""
+                    />
+                    <p className="text-lg font-semibold">{product?.product_title}</p>
+                    <p className="text-slate-400">{product?.product_author?.artist_name}</p>
+                    <p>{product?.product_category?.categoryName}</p>
+                  </div>
+                  <div className="flex flex-row gap-6">
+                    <button className="py-2 px-6 bg-green-400 active:scale-[.9]">Edit</button>
+                    <button
+                      className="py-2 px-4 bg-orange-400 active:scale-[.9]"
+                      onClick={() => handleOpenDeleteProductModal(index)}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </li>
               ))
             : ""}
         </ul>
       </section>
+      <dialog ref={deleteButtonRef} className=" gap-4 p-6">
+        <div className="flex flex-col gap-4">
+          <div>
+            <p>
+              Do you want to delete <i>{seletedProduct?.product_title}</i>
+            </p>
+          </div>
+          <div className="flex gap-6">
+            <button onClick={handleDeleteProduct} className="px-6 py-2 bg-blue-400">
+              Yes
+            </button>
+            <button onClick={handleCloseModal} className="px-6 py-2 bg-red-400">
+              No
+            </button>
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 }
