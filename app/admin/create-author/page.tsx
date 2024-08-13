@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { getAuthors } from "../actions/getauthors";
-import { getAllRoutes } from "../actions/getAllRoutes";
+import { getAuthors } from "../../actions/authorapicalls/getauthors";
+import { getAllRoutes } from "../../actions/getAllRoutes";
 
 export interface authorTypes {
   _id: number;

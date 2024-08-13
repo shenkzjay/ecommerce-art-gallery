@@ -2,10 +2,13 @@
 
 import { useEffect, useState, useRef } from "react";
 import { authorTypes } from "../create-author/page";
-import { getAllRoutes } from "../actions/getAllRoutes";
+import { getAllRoutes } from "../../actions/getAllRoutes";
 import { CategoryProps } from "../create-category/page";
-import { DeleteProduct } from "../actions/deleteProduct.";
+import { DeleteProduct } from "../../actions/productapicall/deleteProduct.";
+import { createProduct } from "../../actions/productapicall/createProduct";
+import { updateProduct } from "../../actions/productapicall/updateProduct";
 import Image from "next/image";
+import { useQueryClient } from "@tanstack/react-query";
 
 export interface ProductTypes {
   _id: number;
@@ -28,69 +31,83 @@ export default function CreateProduct() {
   const [allProduct, setAllProduct] = useState<ProductTypes[]>([]);
   const deleteButtonRef = useRef<HTMLDialogElement | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
-  const [seletedProduct, setSelectedProduct] = useState<ProductTypes | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductTypes | null>(null);
 
-  console.log("allproducts", allProduct);
+  const { data, isError, isLoading } = getAllRoutes();
 
-  const handleGetAllAuthors = async () => {
-    const allRoutes = await getAllRoutes();
+  const createnewProduct = createProduct();
 
-    const authors = allRoutes.authors;
+  const deleteProduct = DeleteProduct();
 
-    const categories = allRoutes.categories;
+  const updateProducts = updateProduct();
 
-    const products = allRoutes.products;
+  const queryClient = useQueryClient();
 
-    console.log(authors, "authors");
+  const authors = data?.authors;
 
-    setAllAuthors(authors);
-    setAllCategories(categories);
-    setAllProduct(products);
-  };
+  const categories = data?.categories;
+
+  const products = data?.products;
+
+  console.log(allauthors);
 
   useEffect(() => {
-    handleGetAllAuthors();
-  }, []);
+    if (data) {
+      setAllAuthors(authors);
+      setAllProduct(products);
+      setAllCategories(categories);
+    }
+  });
 
+  console.log(allauthors, "allauthors");
+
+  //create product and update form values
   const handleCreateProduct = async (e: React.MouseEvent) => {
     e.preventDefault();
 
     if (formRef.current) {
       const formData = new FormData(formRef.current);
 
-      // formData.append("product_image", fileUpload);
       formData.append("product_category", selectCategory);
       formData.append("product_author", selectAuthor);
 
-      console.log(formData, "productData");
+      if (selectedProduct && currentIndex !== null) {
+        const selectedProduct_id = allProduct[currentIndex]._id;
+        updateProducts.mutate(
+          { formData, selectedProduct_id },
+          {
+            onSuccess: () => {
+              setSelectedProduct(null);
+            },
+          }
+        );
+      } else {
+        createnewProduct.mutate(formData, {
+          onSuccess: async (data) => {
+            setAllProduct((prev) => [...prev, data.product]);
+            queryClient.invalidateQueries({ queryKey: ["getallroutes"] });
 
-      const newProduct = await fetch("http://localhost:8001/product", {
-        method: "POST",
-        body: formData,
-      });
-
-      const response = await newProduct.json();
-
-      setAllProduct((prev) => [...prev, response.product]);
-
-      console.log("products life", response.product.imageUrl);
+            formRef.current?.reset();
+          },
+          onError: async (error) => {
+            console.error("Error creating product:", error);
+          },
+        });
+      }
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFileUpload(e.target.files[0]);
-    }
-  };
-
+  //set selected category from dropdown
   const handleSelectCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectCategory(e.target.value);
   };
 
+  //set selected author from dropdown
   const handleSelectAuthor = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectAuthor(e.target.value);
   };
 
+  //open delete modal
   const handleOpenDeleteProductModal = (index: number) => {
     const product = allProduct[index];
     setSelectedProduct(product);
@@ -101,26 +118,36 @@ export default function CreateProduct() {
     }
   };
 
+  //delete product
   const handleDeleteProduct = async () => {
     if (currentIndex !== null) {
       const id = allProduct[currentIndex]._id;
 
-      const deleteItem = await DeleteProduct(id);
+      deleteProduct.mutate(id, {
+        onSuccess: () => {
+          setAllProduct((prevProducts) => prevProducts.filter((product) => product._id !== id));
 
-      setAllProduct((prevProducts) => prevProducts.filter((product) => product._id !== id));
-
-      console.log(deleteItem);
+          queryClient.invalidateQueries({ queryKey: ["getallroutes"] });
+        },
+      });
 
       handleCloseModal();
     }
   };
 
+  //close delete modal
   const handleCloseModal = () => {
     if (deleteButtonRef.current) {
       deleteButtonRef.current.close();
       setSelectedProduct(null);
     }
   };
+
+  const handleUpdateProduct = (index: number) => {
+    const product = allProduct[index];
+    setSelectedProduct(product);
+  };
+
   return (
     <div>
       CreateProduct
@@ -131,6 +158,7 @@ export default function CreateProduct() {
           id="product_title"
           name="product_title"
           title="product_title"
+          defaultValue={selectedProduct ? selectedProduct.product_title : ""}
           placeholder="product title"
         />
         <input
@@ -179,10 +207,9 @@ export default function CreateProduct() {
           name="product_image"
           title="product_image"
           placeholder="product_image"
-          onChange={(e) => handleImageUpload(e)}
         />
         <button className="bg-orange-400 px-4 py-2" onClick={(e) => handleCreateProduct(e)}>
-          Create products
+          {selectedProduct ? "Update Product" : "Create Product"}
         </button>
       </form>
       <section>
@@ -195,18 +222,26 @@ export default function CreateProduct() {
                   className="flex flex-row justify-between gap-4 border p-4 bg-[#f4f4f4] rounded-[20px]"
                 >
                   <div>
-                    <img
-                      src={product?.imageUrl ? product?.imageUrl : ""}
-                      width={100}
-                      height={100}
-                      alt=""
-                    />
+                    <div className="w-24 h-24">
+                      <img
+                        src={product?.imageUrl ? product?.imageUrl : ""}
+                        width={100}
+                        height={100}
+                        alt=""
+                        className="w-full h-full object-cover object-top"
+                      />
+                    </div>
                     <p className="text-lg font-semibold">{product?.product_title}</p>
                     <p className="text-slate-400">{product?.product_author?.artist_name}</p>
                     <p>{product?.product_category?.categoryName}</p>
                   </div>
                   <div className="flex flex-row gap-6">
-                    <button className="py-2 px-6 bg-green-400 active:scale-[.9]">Edit</button>
+                    <button
+                      className="py-2 px-6 bg-green-400 active:scale-[.9]"
+                      onClick={() => handleUpdateProduct(index)}
+                    >
+                      Edit
+                    </button>
                     <button
                       className="py-2 px-4 bg-orange-400 active:scale-[.9]"
                       onClick={() => handleOpenDeleteProductModal(index)}
@@ -223,7 +258,7 @@ export default function CreateProduct() {
         <div className="flex flex-col gap-4">
           <div>
             <p>
-              Do you want to delete <i>{seletedProduct?.product_title}</i>
+              Do you want to delete <i>{selectedProduct?.product_title}</i>
             </p>
           </div>
           <div className="flex gap-6">
