@@ -1,3 +1,4 @@
+import { ProductDataTypes } from "@/app/admin/create-product/page";
 import { useMutation } from "@tanstack/react-query";
 
 // export const updateProduct = async (formData: FormData, selectedProduct_id: number) => {
@@ -27,15 +28,17 @@ import { useMutation } from "@tanstack/react-query";
 export const updateProduct = () => {
   return useMutation({
     mutationFn: async ({
-      formData,
+      productData,
       selectedProduct_id,
     }: {
-      formData: FormData;
+      productData: ProductDataTypes;
       selectedProduct_id: number;
     }) => {
+      console.log("updating product with id" + selectedProduct_id);
+
       return fetch(`http://localhost:8001/product/update/${selectedProduct_id}`, {
         method: "PUT",
-        body: formData,
+        body: JSON.stringify(productData),
       }).then((res) => res.json());
     },
   });
