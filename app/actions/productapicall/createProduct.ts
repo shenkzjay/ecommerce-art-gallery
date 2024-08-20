@@ -3,15 +3,13 @@ import { useMutation } from "@tanstack/react-query";
 
 export const createProduct = () => {
   return useMutation({
-    mutationFn: async (productData: ProductDataTypes) => {
-      console.log(productData, "productData");
+    mutationFn: async (formData: FormData) => {
+      console.log(formData, "productData");
 
       return await fetch("http://localhost:8001/product", {
         method: "POST",
-        body: JSON.stringify(productData),
-        headers: {
-          "Content-Type": "application/json",
-        },
+
+        body: formData,
       }).then((res) => res.json());
     },
   });

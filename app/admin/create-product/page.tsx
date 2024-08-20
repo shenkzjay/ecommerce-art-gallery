@@ -18,6 +18,7 @@ export interface ProductTypes {
   product_about: string;
   product_image: string;
   product_date: string;
+  product_price: number;
   product_author: authorTypes;
   product_category: CategoryProps;
   imageUrl: string;
@@ -28,6 +29,7 @@ export interface ProductDataTypes {
   product_about: string;
   product_image: string;
   product_date: string;
+  product_price: number;
   product_author: authorTypes;
   product_category: CategoryProps;
 }
@@ -168,71 +170,62 @@ export default function CreateProduct() {
     setValue("product_about", product?.product_about);
     setValue("product_date", formattedDate);
     setValue("product_image", product?.product_image);
+    setValue("product_price", product.product_price);
   };
 
   const onSubmit: SubmitHandler<ProductTypes> = (data) => {
     console.log(data, "data");
 
-    // formData.append("product_image", data.product_image[0]);
-    // formData.append("product_title", data.product_title);
-    // formData.append("product_about", data.product_about);
-    // formData.append("product_author", JSON.stringify(data.product_author));
-    // formData.append("product_date", JSON.stringify(data.product_date));
-    // formData.append("product_category", JSON.stringify(data.product_category));
+    if (formRef.current) {
+      const formData = new FormData(formRef.current);
 
-    // if (data.product_image && data.product_image.length > 0) {
-    //   formData.append("product_image", data.product_image[0]);
-    // }
+      // if (data.product_image && data.product_image.length > 0) {
+      //   formData.append("product_image", data.product_image[0]);
+      // }
 
-    // if (data.product_title) {
-    //   formData.append("product_title", data.product_title);
-    // }
+      // if (data.product_title) {
+      //   formData.append("product_title", data.product_title);
+      // }
 
-    // if (data.product_about) {
-    //   formData.append("product_about", data.product_about);
-    // }
+      // if (data.product_about) {
+      //   formData.append("product_about", data.product_about);
+      // }
 
-    // if (data.product_author) {
-    //   formData.append("product_author", JSON.stringify(data.product_author));
-    // }
+      // if (data.product_author) {
+      //   formData.append("product_author", JSON.stringify(data.product_author));
+      // }
 
-    // if (data.product_date) {
-    //   formData.append("product_date", data.product_date);
-    // }
+      // if (data.product_date) {
+      //   formData.append("product_date", data.product_date);
+      // }
 
-    // if (data.product_category) {
-    //   formData.append("product_category", JSON.stringify(data.product_category));
-    // }
+      // if (data.product_category) {
+      //   formData.append("product_category", JSON.stringify(data.product_category));
+      // }
 
-    const productData = {
-      product_title: data?.product_title,
-      product_author: data?.product_author,
-      product_category: data?.product_category,
-      product_date: data?.product_date,
-      product_about: data?.product_about,
-      product_image: data?.product_image[0],
-    };
-
-    if (selectedProduct && currentIndex !== null) {
-      const selectedProduct_id = allProduct[currentIndex]._id;
-      updateProducts.mutate(
-        { productData, selectedProduct_id },
-        {
-          onSuccess: () => {
-            setSelectedProduct(null);
+      if (selectedProduct && currentIndex !== null) {
+        const selectedProduct_id = allProduct[currentIndex]._id;
+        updateProducts.mutate(
+          { formData, selectedProduct_id },
+          {
+            onSuccess: () => {
+              setSelectedProduct(null);
+              queryClient.invalidateQueries({ queryKey: ["getallroutes"] });
+            },
+          }
+        );
+      } else {
+        createnewProduct.mutate(formData, {
+          onSuccess: async (formData) => {
+            setAllProduct((prev) => [...prev, formData.product]);
+            queryClient.invalidateQueries({ queryKey: ["getallroutes"] });
+            formRef.current?.reset();
           },
-        }
-      );
-    } else {
-      createnewProduct.mutate(productData, {
-        onSuccess: async (productData) => {
-          setAllProduct((prev) => [...prev, productData.product]);
-          queryClient.invalidateQueries({ queryKey: ["getallroutes"] });
-        },
-        onError: async (error) => {
-          console.error("Error creating product:", error);
-        },
-      });
+          onError: async (error) => {
+            console.error("Error creating product:", error);
+          },
+        });
+      }
     }
   };
 
@@ -241,7 +234,7 @@ export default function CreateProduct() {
       CreateProduct
       <form
         className="flex flex-col md:w-1/3 gap-4"
-        // ref={formRef}
+        ref={formRef}
         onSubmit={handleSubmit(onSubmit)}
         encType="multipart/form-data"
       >
@@ -256,6 +249,12 @@ export default function CreateProduct() {
           className="border px-4 py-2 rounded-md"
         />
         <input type="date" {...register("product_date")} className="border px-4 py-2 rounded-md" />
+        <input
+          type="number"
+          {...register("product_price")}
+          className="border px-4 py-2 rounded-md"
+          placeholder="product price"
+        />
 
         <select {...register("product_category")} className="border px-4 py-2 rounded-md">
           <option value="">Select Category</option>

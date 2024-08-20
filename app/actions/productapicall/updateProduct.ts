@@ -28,17 +28,17 @@ import { useMutation } from "@tanstack/react-query";
 export const updateProduct = () => {
   return useMutation({
     mutationFn: async ({
-      productData,
+      formData,
       selectedProduct_id,
     }: {
-      productData: ProductDataTypes;
+      formData: FormData;
       selectedProduct_id: number;
     }) => {
       console.log("updating product with id" + selectedProduct_id);
 
       return fetch(`http://localhost:8001/product/update/${selectedProduct_id}`, {
         method: "PUT",
-        body: JSON.stringify(productData),
+        body: formData,
       }).then((res) => res.json());
     },
   });
