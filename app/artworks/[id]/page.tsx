@@ -8,8 +8,6 @@ interface ParamsType {
 }
 
 export default function Page({ params }: { params: { id: string } }) {
-  // const singleProduct = getSingleProduct({ params });
-
   const { data, isError, isLoading } = getSingleProduct({ params });
 
   const singleProductData = data as ProductTypes;
@@ -79,7 +77,9 @@ export default function Page({ params }: { params: { id: string } }) {
       <section className="mt-20 flex flex-col">
         <h3 className="text-3xl">About Author</h3>
         <span className="flex w-full h-[.08rem] bg-slate-200 my-2"></span>
-        <div>author profile image</div>
+        <div>
+          <img src={singleProductData?.imageUrl} width={100} height={100} alt="" />
+        </div>
         <p>{singleProductData?.product_author?.artist_name}</p>
         <p>{`b.${new Date(singleProductData?.product_author?.date_of_birth).getFullYear()}`}</p>
         <p>{singleProductData?.product_author.bio}</p>

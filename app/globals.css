@@ -6,6 +6,25 @@
   border-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7)) 50% / 50%;
 }
 
-@view-transition {
-  navigation: auto;
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+.authorscroll {
+  scrollbar-width: 3px !important;
+  scrollbar-color: #1a1a1a #f7f7f7;
+}
+
+/* Chrome, Edge, and Safari */
+.authorscroll::-webkit-scrollbar {
+  width: 5px !important;
+  height: 5px !important;
+}
+
+.authorscroll::-webkit-scrollbar-track {
+  background: #f7f7f7;
+}
+
+.authorscroll::-webkit-scrollbar-thumb {
+  background-color: black;
+  border-radius: 10px;
+  border: 3px solid #ffffff;
 }

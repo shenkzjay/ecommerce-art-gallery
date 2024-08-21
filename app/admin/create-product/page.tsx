@@ -72,7 +72,7 @@ export default function CreateProduct() {
       setAllProduct(products);
       setAllCategories(categories);
     }
-  });
+  }, [data]);
 
   console.log(allauthors, "allauthors");
 
@@ -178,30 +178,6 @@ export default function CreateProduct() {
 
     if (formRef.current) {
       const formData = new FormData(formRef.current);
-
-      // if (data.product_image && data.product_image.length > 0) {
-      //   formData.append("product_image", data.product_image[0]);
-      // }
-
-      // if (data.product_title) {
-      //   formData.append("product_title", data.product_title);
-      // }
-
-      // if (data.product_about) {
-      //   formData.append("product_about", data.product_about);
-      // }
-
-      // if (data.product_author) {
-      //   formData.append("product_author", JSON.stringify(data.product_author));
-      // }
-
-      // if (data.product_date) {
-      //   formData.append("product_date", data.product_date);
-      // }
-
-      // if (data.product_category) {
-      //   formData.append("product_category", JSON.stringify(data.product_category));
-      // }
 
       if (selectedProduct && currentIndex !== null) {
         const selectedProduct_id = allProduct[currentIndex]._id;
