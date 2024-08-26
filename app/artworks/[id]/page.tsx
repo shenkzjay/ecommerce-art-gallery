@@ -2,9 +2,21 @@
 
 import getSingleProduct from "@/app/actions/productapicall/getSingleProduct";
 import { ProductTypes } from "@/app/admin/create-product/page";
+import {
+  getSingleAuthor,
+  getSingleProductFromAuthor,
+} from "@/app/actions/authorapicalls/getSingleAuthor";
+import { authorDataTypes } from "@/app/admin/create-author/page";
+import Link from "next/link";
 
-interface ParamsType {
-  id: string;
+export interface ParamsType extends authorDataTypes {
+  authorProducts: ProductTypes;
+  authorProductsImage: [
+    {
+      singleProductImg: string;
+      _doc: ProductTypes;
+    }
+  ];
 }
 
 export default function Page({ params }: { params: { id: string } }) {
@@ -12,7 +24,24 @@ export default function Page({ params }: { params: { id: string } }) {
 
   const singleProductData = data as ProductTypes;
 
+  const singleAuthorId = {
+    id: singleProductData?.product_author?._id,
+  };
+
+  const {
+    data: singleAuthorData,
+    isError: singleAuthorErrorState,
+    isLoading: singleAuthorLoadingState,
+  } = getSingleProductFromAuthor({ singleAuthorId }) as {
+    data: ParamsType | undefined;
+    isError: boolean;
+    isLoading: boolean;
+  };
+
+  // const singleAuthor = singleAuthorData as authorDataTypes;
+
   console.log(data, "params");
+  console.log(singleAuthorData, "singlAuthor");
 
   //loading state
   if (isLoading) {
@@ -77,12 +106,38 @@ export default function Page({ params }: { params: { id: string } }) {
       <section className="mt-20 flex flex-col">
         <h3 className="text-3xl">About Author</h3>
         <span className="flex w-full h-[.08rem] bg-slate-200 my-2"></span>
-        <div>
-          <img src={singleProductData?.imageUrl} width={100} height={100} alt="" />
+        <Link href={`/artists/${singleAuthorData?._id}`}>
+          <div>
+            <img src={singleAuthorData?.imageUrl} width={100} height={100} alt="" />
+          </div>
+          <p>{singleProductData?.product_author?.artist_name}</p>
+          <p>{`b.${new Date(singleProductData?.product_author?.date_of_birth).getFullYear()}`}</p>
+          <p>{singleProductData?.product_author?.bio}</p>
+        </Link>
+      </section>
+
+      <section className="mt-20">
+        <h3 className="text-2xl">Author's collection</h3>
+        <span className="flex w-full h-[.08rem] bg-slate-200 my-2"></span>
+        <div className="flex gap-4">
+          {singleAuthorData && singleAuthorData?.authorProductsImage?.length > 0
+            ? singleAuthorData?.authorProductsImage?.map((author, index) => (
+                <Link href={`/artworks/${author?._doc?._id}`} key={index}>
+                  <div className="w-64 h-44 rounded-xl">
+                    <img
+                      src={author.singleProductImg}
+                      width={100}
+                      height={100}
+                      alt=""
+                      className="w-full h-full rounded-xl"
+                    />
+                  </div>
+                  <p>{author?._doc?.product_title}</p>
+                  {author?._doc?.product_price && <p>{`$${author?._doc?.product_price}`}</p>}
+                </Link>
+              ))
+            : ""}
         </div>
-        <p>{singleProductData?.product_author?.artist_name}</p>
-        <p>{`b.${new Date(singleProductData?.product_author?.date_of_birth).getFullYear()}`}</p>
-        <p>{singleProductData?.product_author.bio}</p>
       </section>
     </section>
   );

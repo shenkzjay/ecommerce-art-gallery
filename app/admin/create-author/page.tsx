@@ -5,6 +5,7 @@ import { getAuthors } from "../../actions/authorapicalls/getauthors";
 import { getAllRoutes } from "../../actions/getAllRoutes";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { createAuthor } from "@/app/actions/authorapicalls/createAuthors";
+import { useQueryClient } from "@tanstack/react-query";
 
 export interface authorTypes {
   _id: number;
@@ -50,14 +51,18 @@ export default function CreateAuthor() {
 
   const { data, isError, isLoading } = getAuthors();
 
+  const queryClient = useQueryClient();
+
   console.log(data?.authors, "dats");
 
+  //get all authors on page load
   useEffect(() => {
     if (data) {
       setAllAuthors(data?.authors);
     }
   }, [data]);
 
+  //delete author function
   const handleDeleteAuthor = async (index: number) => {
     const id = getAllAuthors[index]._id;
 
@@ -79,6 +84,7 @@ export default function CreateAuthor() {
     }
   };
 
+  //create and update author
   const onSubmit: SubmitHandler<authorDataTypes> = async (data) => {
     if (formRef.current) {
       const formData = new FormData(formRef.current);
@@ -86,6 +92,7 @@ export default function CreateAuthor() {
       createAuthorData.mutate(formData, {
         onSuccess: async (formData) => {
           setAllAuthors((prev) => [...prev, formData?.authors]);
+          queryClient.invalidateQueries({ queryKey: ["getAuthors"] });
         },
 
         onError: async (error) => {
@@ -209,49 +216,53 @@ export default function CreateAuthor() {
               </tr>
             </thead>
             <tbody className="bg-white p-0 w-full">
-              {getAllAuthors && getAllAuthors.length > 0
-                ? getAllAuthors.map((author, index) => (
-                    <tr
-                      key={author._id}
-                      className="even:bg-slate-100  text-sm border-b border-[#F0F2F5] w-full"
-                    >
-                      <td className="py-2">
-                        <img
-                          src={author?.imageUrl ? author?.imageUrl : ""}
-                          width={100}
-                          height={100}
-                          alt=""
-                          className="w-50 h-50 object-cover object-top"
-                        />
-                      </td>
-                      <td className="py-2">{author.artist_name}</td>
-                      <td className="py-2">{author.artist_type}</td>
-                      <td className="py-2">{author.bio}</td>
-                      <td className="py-2">{new Date(author.date_of_birth).toDateString()}</td>
-                      <td className="py-2">{author.phonenumber}</td>
-                      <td className="text-wrap">{author.email}</td>
-                      <td className="flex flex-col py-2">
-                        <span>{author?.facebook}</span>
-                        <span>{author?.instagram}</span>
-                        <span>{author?.tiktok}</span>
-                        <span>{author?.twitter}</span>
-                      </td>
+              {getAllAuthors && getAllAuthors.length > 0 ? (
+                getAllAuthors.map((author, index) => (
+                  <tr
+                    key={author?._id}
+                    className="even:bg-slate-100  text-sm border-b border-[#F0F2F5] w-full"
+                  >
+                    <td className="py-2">
+                      <img
+                        src={author?.imageUrl ? author?.imageUrl : ""}
+                        width={100}
+                        height={100}
+                        alt=""
+                        className="w-50 h-50 object-cover object-top"
+                      />
+                    </td>
+                    <td className="py-2">{author?.artist_name}</td>
+                    <td className="py-2">{author?.artist_type}</td>
+                    <td className="py-2">{author?.bio}</td>
+                    <td className="py-2">{new Date(author?.date_of_birth).toDateString()}</td>
+                    <td className="py-2">{author?.phonenumber}</td>
+                    <td className="text-wrap">{author?.email}</td>
+                    <td className="flex flex-col py-2">
+                      <span>{author?.facebook}</span>
+                      <span>{author?.instagram}</span>
+                      <span>{author?.tiktok}</span>
+                      <span>{author?.twitter}</span>
+                    </td>
 
-                      <td>
-                        <button className="px-4 py-2 bg-orange-400">edit</button>
-                      </td>
+                    <td>
+                      <button className="px-4 py-2 bg-orange-400">edit</button>
+                    </td>
 
-                      <td>
-                        <button
-                          className="px-4 py-2 bg-red-400"
-                          onClick={() => handleDeleteAuthor(index)}
-                        >
-                          delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                : ""}
+                    <td>
+                      <button
+                        className="px-4 py-2 bg-red-400"
+                        onClick={() => handleDeleteAuthor(index)}
+                      >
+                        delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td>no new friends</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

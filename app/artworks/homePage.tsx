@@ -74,39 +74,51 @@ export const HomePage = () => {
 
   return (
     <div className="mx-auto w-[85vw]">
-      <nav className="flex flex-row items-center justify-between">
-        <div>Loggo</div>
+      <nav className="my-10">
+        <div className="flex flex-row items-center justify-between">
+          <div>Loggo</div>
 
-        <div className="my-10">
-          <label className="sr-only border">Search for products</label>
-          <input
-            type="search"
-            placeholder="Search for products"
-            className=" px-4 py-2 w-96 bg-[#f6f6f6] rounded-full"
-          />
+          <div className="">
+            <label className="sr-only border">Search for products</label>
+            <input
+              type="search"
+              placeholder="Search for products"
+              className=" px-4 py-2 w-96 bg-[#f6f6f6] rounded-full"
+            />
+          </div>
+
+          <div>
+            <ul className="flex flex-row gap-6">
+              <li>
+                <Link href={"/"}>Artworks</Link>
+              </li>
+              <li>
+                <Link href={"/"}>Artists</Link>
+              </li>
+              <li>
+                <Link href={"/"}>Buy</Link>
+              </li>
+              <li>
+                <Link href={"/"}>Sell</Link>
+              </li>
+              <li>
+                <button>Log in</button>
+              </li>
+              <li>
+                <button>Sign up</button>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        <div>
-          <ul className="flex flex-row gap-6">
-            <li>
-              <Link href={"/"}>Artworks</Link>
-            </li>
-            <li>
-              <Link href={"/"}>Artists</Link>
-            </li>
-            <li>
-              <Link href={"/"}>Buy</Link>
-            </li>
-            <li>
-              <Link href={"/"}>Sell</Link>
-            </li>
-            <li>
-              <button>Log in</button>
-            </li>
-            <li>
-              <button>Sign up</button>
-            </li>
-          </ul>
+        <div className="flex justify-end">
+          <Link
+            href={"/"}
+            className="flex flex-row gap-2 border border-black px-4 py-2 rounded-full"
+          >
+            <p>Cart</p>
+            <span className="bg-orange-600 p-1 rounded-full text-[10px] text-white">123</span>
+          </Link>
         </div>
       </nav>
 
@@ -174,12 +186,12 @@ export const HomePage = () => {
 
         <ul className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 h-full">
           {productData && productData.length > 0
-            ? productData.map((product, index) => (
+            ? productData.slice(0, 8).map((product, index) => (
                 <li key={product._id} className="  h-full mb-6">
                   <Link href={`/artworks/${product._id}`} className="flex flex-col gap-2">
                     <div className="overflow-hidden w-full rounded-xl">
                       <img
-                        src={product.imageUrl ? product.imageUrl : ""}
+                        src={product?.imageUrl ? product?.imageUrl : ""}
                         width={100}
                         height={100}
                         alt=""
@@ -187,13 +199,13 @@ export const HomePage = () => {
                       />
                     </div>
                     <div className="text-[14px]">
-                      <p className="font-semibold">{product.product_title}</p>
-                      <p className="text-slate-500">{product.product_category.categoryName}</p>
+                      <p className="font-semibold">{product?.product_title}</p>
+                      <p className="text-slate-500">{product?.product_category?.categoryName}</p>
 
-                      <p className="text-slate-500">{product.product_author.artist_name}</p>
+                      <p className="text-slate-500">{product?.product_author?.artist_name}</p>
 
                       <p className="mt-2 font-semibold">
-                        {product.product_price ? `$${product.product_price}` : ""}
+                        {product?.product_price ? `$${product?.product_price}` : ""}
                       </p>
                     </div>
                   </Link>
@@ -202,6 +214,10 @@ export const HomePage = () => {
             : ""}
         </ul>
       </section>
+
+      <span className="flex justify-center mt-6">
+        <a className="py-2 px-6 rounded-full border cursor-pointer">See all artworks →</a>
+      </span>
 
       <section className="mt-32">
         <h3 className="text-3xl">Editorial pick</h3>
@@ -308,13 +324,15 @@ export const HomePage = () => {
       </section>
 
       <section className="my-32">
-        <h3 className="text-3xl">Trending Artists</h3>
-        <span className="flex w-full h-[.05rem] bg-slate-200 mb-10 mt-2"></span>
-
+        <h3 className="text-3xl">Trending Artists</h3>ç
         <div className="grid grid-flow-col overflow-scroll gap-4  ">
           {authurData && authurData.length > 0
             ? authurData?.map((author, index) => (
-                <Link href={"/"} className="00 grid grid-cols-subgrid rounded-xl" key={author._id}>
+                <Link
+                  href={`/artists/${author._id}`}
+                  className="grid grid-cols-subgrid rounded-xl"
+                  key={author._id}
+                >
                   <div className="w-64 h-44 rounded-xl">
                     <img
                       src={author?.imageUrl}
