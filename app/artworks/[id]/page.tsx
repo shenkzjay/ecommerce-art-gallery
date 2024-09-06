@@ -87,8 +87,18 @@ export default function Page({ params }: { params: { id: string } }) {
             <p className="text-slate-500">{singleProductData?.product_author?.artist_name}</p>
             <p className="text-slate-500">{singleProductData?.product_about}</p>
             <div className="flex flex-row gap-6">
-              <button className="py-4 px-6 bg-black text-white font-semibold rounded-xl hover:scale-105">{`Purchase at $${singleProductData.product_price} `}</button>
-              <button className="py-4 px-6 rounded-xl outline outline-black font-semibold hover:scale-105">
+              <Link
+                href={{
+                  pathname: "/orders",
+                  query: {
+                    title: singleProductData.product_title,
+                    price: singleProductData.product_price,
+                  },
+                }}
+              >
+                <button className="py-3 px-6 bg-black text-white font-semibold rounded-full hover:scale-105">{`Purchase at $${singleProductData.product_price} `}</button>
+              </Link>
+              <button className="py-3 px-6 rounded-full outline outline-black font-semibold hover:scale-105">
                 Add to cart
               </button>
             </div>

@@ -13,6 +13,7 @@ export interface authorTypes {
   email: string;
   phonenumber: string;
   bio: string;
+  country: string;
   facebook: string;
   tiktok: string;
   twitter: string;
@@ -132,6 +133,13 @@ export default function CreateAuthor() {
             {...register("email")}
             className="border px-4 py-2 rounded-md"
             placeholder="email"
+          />
+
+          <input
+            type="text"
+            {...register("country")}
+            className="border px-4 py-2 rounded-md"
+            placeholder="nationality"
           />
 
           <input

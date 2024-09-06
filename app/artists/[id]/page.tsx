@@ -32,14 +32,14 @@ export default function Artist({ params }: { params: { id: string } }) {
             data?.date_of_birth
           ).getFullYear()}`}</p>
           <div className="flex flex-row gap-6">
-            <a href={data?.twitter} className="underline text-blue-500">
+            <a href={data?.twitter} target="_blank" className="underline text-blue-500">
               Twitter
             </a>
 
-            <a href={data?.tiktok} className="underline text-brown-500">
+            <a href={data?.tiktok} target="_blank" className="underline text-brown-500">
               tiktok
             </a>
-            <a href={data?.instagram} className="underline text-pink-500">
+            <a href={data?.instagram} target="_blank" className="underline text-pink-500">
               instagram
             </a>
           </div>

@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { ProductTypes } from "../admin/create-product/page";
 import { authorDataTypes } from "../admin/create-author/page";
 import Link from "next/link";
+import { CartIcon } from "@/public/svg/cart";
+import { LoveIcon } from "@/public/svg/love";
+import { Navbar } from "../components/navbar";
 
 export const HomePage = () => {
   const { data, isError, isLoading } = getAllRoutes();
@@ -18,6 +21,10 @@ export const HomePage = () => {
 
   const [isImageButtonClicked, setIsImageButtonClicked] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+
+  const [currentSavedItem, setCurrentSavedItem] = useState<number>();
+  const [savedItems, setSavedItems] = useState<ProductTypes[]>([]);
+  const [savedItemStyle, setSavedItemStyle] = useState(false);
 
   console.log(data, "hello");
 
@@ -72,55 +79,25 @@ export const HomePage = () => {
     setCurrentIndex(index);
   };
 
+  const handleAddSavedItems = (product: ProductTypes, index: number) => {
+    if (savedItems?.some((item) => item._id === product._id)) {
+      setSavedItems((prevSavesItems) =>
+        prevSavesItems.filter((savedItem) => savedItem._id !== product._id)
+      );
+    } else {
+      setSavedItems((prevSavedItems) => [...prevSavedItems, product]);
+    }
+
+    setCurrentSavedItem(index);
+
+    setSavedItemStyle(!savedItemStyle);
+  };
+
+  console.log({ savedItems });
+
   return (
     <div className="mx-auto w-[85vw]">
-      <nav className="my-10">
-        <div className="flex flex-row items-center justify-between">
-          <div>Loggo</div>
-
-          <div className="">
-            <label className="sr-only border">Search for products</label>
-            <input
-              type="search"
-              placeholder="Search for products"
-              className=" px-4 py-2 w-96 bg-[#f6f6f6] rounded-full"
-            />
-          </div>
-
-          <div>
-            <ul className="flex flex-row gap-6">
-              <li>
-                <Link href={"/"}>Artworks</Link>
-              </li>
-              <li>
-                <Link href={"/"}>Artists</Link>
-              </li>
-              <li>
-                <Link href={"/"}>Buy</Link>
-              </li>
-              <li>
-                <Link href={"/"}>Sell</Link>
-              </li>
-              <li>
-                <button>Log in</button>
-              </li>
-              <li>
-                <button>Sign up</button>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="flex justify-end">
-          <Link
-            href={"/"}
-            className="flex flex-row gap-2 border border-black px-4 py-2 rounded-full"
-          >
-            <p>Cart</p>
-            <span className="bg-orange-600 p-1 rounded-full text-[10px] text-white">123</span>
-          </Link>
-        </div>
-      </nav>
+      <Navbar items={savedItems} />
 
       <section className="flex flex-row overflow-scroll  gap-2">
         {imageWrapper &&
@@ -135,8 +112,8 @@ export const HomePage = () => {
               }}
               className={`${
                 currentIndex === index
-                  ? "w-full  flex flex-col [transition:width_.3s_ease-in-out] rounded-xl "
-                  : " w-[400px] h-[70vh] border flex flex-col [transition:width_.3s_ease-in-out]  overflow-hidden"
+                  ? "w-full flex flex-col [transition:width_.3s_ease-in-out] rounded-xl "
+                  : " w-[400px] h-[70vh] border flex flex-col [transition:width_.3s_ease-in-out] overflow-hidden"
               } rounded-xl relative z-10`}
             >
               <div className="absolute top-0 left-0 [background:linear-gradient(rgba(0,0,0,0.08),_rgba(0,0,0,0.5))] w-full h-full -z-10 rounded-xl"></div>
@@ -187,7 +164,7 @@ export const HomePage = () => {
         <ul className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 h-full">
           {productData && productData.length > 0
             ? productData.slice(0, 8).map((product, index) => (
-                <li key={product._id} className="  h-full mb-6">
+                <li key={product._id} className=" relative h-full mb-6">
                   <Link href={`/artworks/${product._id}`} className="flex flex-col gap-2">
                     <div className="overflow-hidden w-full rounded-xl">
                       <img
@@ -198,17 +175,34 @@ export const HomePage = () => {
                         className="w-full h-64 object-cover  hover:scale-110"
                       />
                     </div>
-                    <div className="text-[14px]">
-                      <p className="font-semibold">{product?.product_title}</p>
-                      <p className="text-slate-500">{product?.product_category?.categoryName}</p>
+                    <div className="flex justify-between">
+                      <div className="text-[14px]">
+                        <p className="font-semibold">{product?.product_title}</p>
+                        <p className="text-slate-500">{product?.product_category?.categoryName}</p>
 
-                      <p className="text-slate-500">{product?.product_author?.artist_name}</p>
+                        <p className="text-slate-500">{product?.product_author?.artist_name}</p>
 
-                      <p className="mt-2 font-semibold">
-                        {product?.product_price ? `$${product?.product_price}` : ""}
-                      </p>
+                        <p className="mt-2 font-semibold">
+                          {product?.product_price ? `$${product?.product_price}` : ""}
+                        </p>
+                      </div>
                     </div>
                   </Link>
+                  <div className="flex absolute top-[14.5rem] right-0 z-30">
+                    <button
+                      onClick={() => handleAddSavedItems(product, index)}
+                      className={`text-[14px] ${
+                        savedItems.some((item) => item._id === product._id)
+                          ? "bg-black p-1.5 rounded-full shadow-md hover:scale-105 active:shadow-none active:[transform:translate(1px,1px)] text-white"
+                          : "bg-white p-1.5 rounded-full shadow-md hover:scale-105 active:shadow-none active:[transform:translate(1px,1px)]"
+                      }`}
+                    >
+                      {" "}
+                      <span className={`flex w-5 h-5`}>
+                        <LoveIcon />
+                      </span>
+                    </button>
+                  </div>
                 </li>
               ))
             : ""}
@@ -324,8 +318,8 @@ export const HomePage = () => {
       </section>
 
       <section className="my-32">
-        <h3 className="text-3xl">Trending Artists</h3>ç
-        <div className="grid grid-flow-col overflow-scroll gap-4  ">
+        <h3 className="text-3xl">Trending Artists</h3>
+        <div className="grid grid-flow-col overflow-scroll gap-4  mt-6">
           {authurData && authurData.length > 0
             ? authurData?.map((author, index) => (
                 <Link
