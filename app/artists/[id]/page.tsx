@@ -1,6 +1,6 @@
 "use client";
 
-import { getSingleAuthor } from "@/app/actions/authorapicalls/getSingleAuthor";
+import { getSingleAuthor } from "@/app/api/authorapicalls/getSingleAuthor";
 import { ParamsType } from "@/app/artworks/[id]/page";
 import Link from "next/link";
 

@@ -1,8 +1,8 @@
 "use client";
 
-import { ProductTypes } from "@/app/admin/create-product/page";
+import { ProductTypes } from "@/features/admin/create-product/page";
 import { useSearchParams } from "next/navigation";
-import { Navbar } from "@/app/components/navbar";
+import { Navbar } from "@/component/navbar";
 import Link from "next/link";
 
 export default function Pages() {

@@ -1,12 +1,12 @@
 "use client";
 
-import getSingleProduct from "@/app/actions/productapicall/getSingleProduct";
-import { ProductTypes } from "@/app/admin/create-product/page";
+import getSingleProduct from "@/app/api/productapicall/getSingleProduct";
+import { ProductTypes } from "@/features/admin/create-product/page";
 import {
   getSingleAuthor,
   getSingleProductFromAuthor,
-} from "@/app/actions/authorapicalls/getSingleAuthor";
-import { authorDataTypes } from "@/app/admin/create-author/page";
+} from "@/app/api/authorapicalls/getSingleAuthor";
+import { authorDataTypes } from "@/features/admin/create-author/page";
 import Link from "next/link";
 
 export interface ParamsType extends authorDataTypes {
@@ -21,6 +21,8 @@ export interface ParamsType extends authorDataTypes {
 
 export default function Page({ params }: { params: { id: string } }) {
   const { data, isError, isLoading } = getSingleProduct({ params });
+
+  console.log(data, "singleProductData");
 
   const singleProductData = data as ProductTypes;
 
@@ -91,12 +93,12 @@ export default function Page({ params }: { params: { id: string } }) {
                 href={{
                   pathname: "/orders",
                   query: {
-                    title: singleProductData.product_title,
-                    price: singleProductData.product_price,
+                    title: singleProductData?.product_title,
+                    price: singleProductData?.product_price,
                   },
                 }}
               >
-                <button className="py-3 px-6 bg-black text-white font-semibold rounded-full hover:scale-105">{`Purchase at $${singleProductData.product_price} `}</button>
+                <button className="py-3 px-6 bg-black text-white font-semibold rounded-full hover:scale-105">{`Purchase at $${singleProductData?.product_price} `}</button>
               </Link>
               <button className="py-3 px-6 rounded-full outline outline-black font-semibold hover:scale-105">
                 Add to cart

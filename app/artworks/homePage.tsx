@@ -1,32 +1,46 @@
 "use client";
 
-import { getAllRoutes } from "../actions/getAllRoutes";
-import { useEffect, useState } from "react";
-import { ProductTypes } from "../admin/create-product/page";
-import { authorDataTypes } from "../admin/create-author/page";
+import { getAllRoutes } from "../api/getAllRoutes";
+import { useEffect, useState, useRef, useContext } from "react";
+import { ProductTypes } from "@/features/admin/create-product/page";
+import { authorDataTypes } from "@/features/admin/create-author/page";
 import Link from "next/link";
-import { CartIcon } from "@/public/svg/cart";
 import { LoveIcon } from "@/public/svg/love";
-import { Navbar } from "../components/navbar";
+import { Navbar } from "../../component/navbar";
+import AuthContext from "../context/AuthProvider";
+import { useRouter, usePathname } from "next/navigation";
 
 export const HomePage = () => {
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+
+  const [savedItems, setSavedItems] = useState<ProductTypes[]>([]);
+
   const { data, isError, isLoading } = getAllRoutes();
 
-  if (!data) {
-    console.log("no data");
-  }
+  const router = useRouter();
+
+  const pathName = usePathname();
+
+  console.log({ pathName });
 
   const productData = data?.products as ProductTypes[];
   const authurData = data?.authors as authorDataTypes[];
 
-  const [isImageButtonClicked, setIsImageButtonClicked] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const context = useContext(AuthContext);
 
-  const [currentSavedItem, setCurrentSavedItem] = useState<number>();
-  const [savedItems, setSavedItems] = useState<ProductTypes[]>([]);
-  const [savedItemStyle, setSavedItemStyle] = useState(false);
+  if (!context?.auth) {
+    window.history.replaceState(null, "", "/");
+  }
 
-  console.log(data, "hello");
+  useEffect(() => {
+    if (!context?.auth) {
+      router.replace("/signin");
+    }
+  }, [context?.auth]);
+
+  if (!data) {
+    console.log("no data");
+  }
 
   const imageWrapper = [
     {
@@ -80,23 +94,21 @@ export const HomePage = () => {
   };
 
   const handleAddSavedItems = (product: ProductTypes, index: number) => {
-    if (savedItems?.some((item) => item._id === product._id)) {
-      setSavedItems((prevSavesItems) =>
-        prevSavesItems.filter((savedItem) => savedItem._id !== product._id)
-      );
-    } else {
-      setSavedItems((prevSavedItems) => [...prevSavedItems, product]);
-    }
-
-    setCurrentSavedItem(index);
-
-    setSavedItemStyle(!savedItemStyle);
+    // if (savedItems?.some((item) => item._id === product._id)) {
+    //   setSavedItems((prevSavesItems) =>
+    //     prevSavesItems.filter((savedItem) => savedItem._id !== product._id)
+    //   );
+    // } else {
+    //   setSavedItems((prevSavedItems) => [...prevSavedItems, product]);
+    // }
+    // setCurrentSavedItem(index);
+    // setSavedItemStyle(!savedItemStyle);
   };
 
-  console.log({ savedItems });
+  //signup
 
   return (
-    <div className="mx-auto w-[85vw]">
+    <div className="mx-auto w-[85vw] ">
       <Navbar items={savedItems} />
 
       <section className="flex flex-row overflow-scroll  gap-2">
@@ -121,12 +133,7 @@ export const HomePage = () => {
                 <button
                   className="flex flex-col justify-between h-full w-full"
                   onMouseOver={() => handleToggleIMageButton(index)}
-                >
-                  {/* <span>{image.imageTitle}</span>
-                  <span className={`${currentIndex === index ? "hidden" : "flex"}`}>
-                    {image.imageButtonText}
-                  </span> */}
-                </button>
+                ></button>
               </h3>
               <div
                 className={`${currentIndex === index ? "flex flex-col" : "hidden"} p-6 text-white`}
@@ -138,28 +145,11 @@ export const HomePage = () => {
           ))}
       </section>
 
-      {/* <section className="flex flex-row border">
-        {imageWrapper.map((product, index) => (
-          <button
-            onMouseOver={() => handleToggleIMageButton(index)}
-            key={index}
-            className={`${
-              currentIndex === index
-                ? "hover:w-[400px] [transition:width_1s_ease-in-out]"
-                : "h-96 border real w-[120px] [transition:width_1s_ease-in-out]"
-            }`}
-          >
-            hello
-          </button>
-        ))}
-      </section> */}
-
       <section className="mt-32">
-        <div className="flex flex-row justify-between items-center">
+        <div className="flex flex-row justify-between items-center mb-10">
           <h3 className="text-3xl ">Featured Artworks</h3>
           <Link href={"/"}>See more →</Link>
         </div>
-        <span className="flex w-full h-[.05rem] bg-slate-200  mb-10 mt-2"></span>
 
         <ul className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 h-full">
           {productData && productData.length > 0
@@ -214,8 +204,8 @@ export const HomePage = () => {
       </span>
 
       <section className="mt-32">
-        <h3 className="text-3xl">Editorial pick</h3>
-        <span className="flex w-full h-[.05rem] bg-slate-200 mb-10 mt-2"></span>
+        <h3 className="text-3xl mb-10">Editorial pick</h3>
+
         <div
           data-cards-count="5"
           className="grid grid-cols-[1fr_.64fr_.36fr_.64fr] grid-rows-[repeat(2,_1fr)] h-[65vh] w-full border gap-4"
@@ -313,13 +303,23 @@ export const HomePage = () => {
         </div>
       </section>
 
-      <section className="mt-32 flex justify-center">
-        <span>Title of life</span>
+      <section className="mt-32">
+        <h4 className="text-3xl">Upcoming Events and Fairs</h4>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(50ch,1fr))] mt-10 gap-4">
+          <div className="relative bg-[url('/images/art9.webp')] bg-no-repeat bg-cover h-[65vh] rounded-xl">
+            <div className="absolute top-0 left-0 [background:linear-gradient(rgba(0,0,0,0.08),_rgba(0,0,0,0.5))] w-full h-full rounded-xl"></div>
+            <h4>Title of life</h4>
+          </div>
+          <div className="relative bg-[url('/images/art17.webp')] bg-no-repeat bg-cover h-[65vh] rounded-xl">
+            <div className="absolute top-0 left-0 [background:linear-gradient(rgba(0,0,0,0.08),_rgba(0,0,0,0.5))] w-full h-full rounded-xl"></div>
+            <h4>Title of life</h4>
+          </div>
+        </div>
       </section>
 
       <section className="my-32">
         <h3 className="text-3xl">Trending Artists</h3>
-        <div className="grid grid-flow-col overflow-scroll gap-4  mt-6">
+        <div className="grid grid-flow-col overflow-scroll gap-4  mt-10">
           {authurData && authurData.length > 0
             ? authurData?.map((author, index) => (
                 <Link

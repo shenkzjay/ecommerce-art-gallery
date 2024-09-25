@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { use } from "react";
 
-export const SignUpUser = () => {
+export const SavedArts = () => {
   return useMutation({
     mutationFn: async (formData: FormData) => {
       return await fetch("", {

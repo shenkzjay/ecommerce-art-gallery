@@ -4,11 +4,11 @@ import { useForm, SubmitHandler } from "react-hook-form";
 
 import { useEffect, useState, useRef } from "react";
 import { authorTypes } from "../create-author/page";
-import { getAllRoutes } from "../../actions/getAllRoutes";
+import { getAllRoutes } from "@/app/api/getAllRoutes";
 import { CategoryProps } from "../create-category/page";
-import { DeleteProduct } from "../../actions/productapicall/deleteProduct.";
-import { createProduct } from "../../actions/productapicall/createProduct";
-import { updateProduct } from "../../actions/productapicall/updateProduct";
+import { DeleteProduct } from "@/app/api/productapicall/deleteProduct.";
+import { createProduct } from "@/app/api/productapicall/createProduct";
+import { updateProduct } from "@/app/api/productapicall/updateProduct";
 import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
 

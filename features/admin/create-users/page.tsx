@@ -44,28 +44,25 @@ export default function Users() {
           name="fullname"
           className="border px-4 py-2"
         />
+
         <input type="text" id="email" title="email" name="email" className="border px-4 py-2" />
+
         <input
-          type="text"
-          id="address"
-          title="address"
-          name="address"
+          type="password"
+          id="password"
+          title="password"
+          name="password"
           className="border px-4 py-2"
         />
+
         <input
-          type="text"
-          id="country"
-          title="country"
-          name="country"
+          type="password"
+          id="confirmpassword"
+          title="confirmpassword"
+          name="confirmpassword"
           className="border px-4 py-2"
         />
-        <input
-          type="text"
-          id="phonenumber"
-          title="phonenumber"
-          name="phonenumber"
-          className="border px-4 py-2"
-        />
+
         <button onClick={(e) => handleSubmit(e)} className="bg-orange-400  px-4 py-2">
           Submit
         </button>
