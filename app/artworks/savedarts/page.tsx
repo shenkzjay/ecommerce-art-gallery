@@ -1,6 +1,6 @@
 "use client";
 
-import { ProductTypes } from "@/features/admin/create-product/page";
+import { ProductTypes } from "@/app/admin/create-product/page";
 import { useSearchParams } from "next/navigation";
 import { Navbar } from "@/component/navbar";
 import Link from "next/link";

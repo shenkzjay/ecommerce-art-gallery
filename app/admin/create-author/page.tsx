@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { getAuthors } from "@/app/api/authorapicalls/getauthors";
+import { getAuthors } from "@/app/api/authors/getauthors";
 import { getAllRoutes } from "@/app/api/getAllRoutes";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { createAuthor } from "@/app/api/authorapicalls/createAuthors";
+import { createAuthor } from "@/app/api/authors/createAuthors";
 import { useQueryClient } from "@tanstack/react-query";
 
 export interface authorTypes {

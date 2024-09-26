@@ -2,8 +2,8 @@
 
 import { getAllRoutes } from "../api/getAllRoutes";
 import { useEffect, useState, useRef, useContext } from "react";
-import { ProductTypes } from "@/features/admin/create-product/page";
-import { authorDataTypes } from "@/features/admin/create-author/page";
+import { ProductTypes } from "@/app/admin/create-product/page";
+import { authorDataTypes } from "@/app/admin/create-author/page";
 import Link from "next/link";
 import { LoveIcon } from "@/public/svg/love";
 import { Navbar } from "../../component/navbar";
@@ -28,15 +28,15 @@ export const HomePage = () => {
 
   const context = useContext(AuthContext);
 
-  if (!context?.auth) {
-    window.history.replaceState(null, "", "/");
-  }
+  // if (!context?.auth) {
+  //   window.history.replaceState(null, "", "/");
+  // }
 
-  useEffect(() => {
-    if (!context?.auth) {
-      router.replace("/signin");
-    }
-  }, [context?.auth]);
+  // useEffect(() => {
+  //   if (!context?.auth) {
+  //     router.replace("/signin");
+  //   }
+  // }, [context?.auth]);
 
   if (!data) {
     console.log("no data");

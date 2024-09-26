@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ProductTypes } from "@/features/admin/create-product/page";
+import { ProductTypes } from "@/app/admin/create-product/page";
 import { redirect } from "next/navigation";
 import { useContext } from "react";
 import AuthContext from "@/app/context/AuthProvider";

@@ -6,9 +6,9 @@ import { useEffect, useState, useRef } from "react";
 import { authorTypes } from "../create-author/page";
 import { getAllRoutes } from "@/app/api/getAllRoutes";
 import { CategoryProps } from "../create-category/page";
-import { DeleteProduct } from "@/app/api/productapicall/deleteProduct.";
-import { createProduct } from "@/app/api/productapicall/createProduct";
-import { updateProduct } from "@/app/api/productapicall/updateProduct";
+import { DeleteProduct } from "@/app/api/products/deleteProduct.";
+import { createProduct } from "@/app/api/products/createProduct";
+import { updateProduct } from "@/app/api/products/updateProduct";
 import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
 

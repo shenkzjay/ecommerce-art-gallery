@@ -1,12 +1,9 @@
 "use client";
 
-import getSingleProduct from "@/app/api/productapicall/getSingleProduct";
-import { ProductTypes } from "@/features/admin/create-product/page";
-import {
-  getSingleAuthor,
-  getSingleProductFromAuthor,
-} from "@/app/api/authorapicalls/getSingleAuthor";
-import { authorDataTypes } from "@/features/admin/create-author/page";
+import getSingleProduct from "@/app/api/products/getSingleProduct";
+import { ProductTypes } from "@/app/admin/create-product/page";
+import { getSingleAuthor, getSingleProductFromAuthor } from "@/app/api/authors/getSingleAuthor";
+import { authorDataTypes } from "@/app/admin/create-author/page";
 import Link from "next/link";
 
 export interface ParamsType extends authorDataTypes {

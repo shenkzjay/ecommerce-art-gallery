@@ -2,7 +2,7 @@
 
 import { useForm, SubmitHandler } from "react-hook-form";
 import { LoginPropTypes, SignupTypes } from "@/types/types";
-import { SignUpUser } from "@/app/api/signupapicall/signup";
+import { SignUpUser } from "@/app/api/signup/signup";
 import Link from "next/link";
 import { Navbar } from "@/component/navbar";
 import { useRouter } from "next/navigation";

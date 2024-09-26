@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { SignInUser } from "../api/signinapicall/signin";
+import { SignInUser } from "../api/signin/signin";
 import { LoginPropTypes } from "@/types/types";
 import Link from "next/link";
 import { Navbar } from "@/component/navbar";

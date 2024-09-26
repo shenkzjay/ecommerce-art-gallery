@@ -16,15 +16,11 @@ export default function AdminLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <div className="flex">
-          <section className="w-[13vw] h-[100vh] border hidden md:flex">
-            <SideNav />
-          </section>
-          <section className="w-[87vw]">{children}</section>
-        </div>
-      </body>
-    </html>
+    <div className="flex">
+      <section className="w-[13vw] h-[100vh] border hidden md:flex">
+        <SideNav />
+      </section>
+      <section className="w-[87vw]">{children}</section>
+    </div>
   );
 }
