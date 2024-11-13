@@ -1,24 +1,32 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { ProductTypes } from "@/app/admin/create-product/page";
+import getSingleProduct from "@/app/api/products/getSingleProduct";
 import { useSearchParams, usePathname } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
 
-export const Orders = () => {
-  const [isActive, setIsActive] = useState("");
+export default function ProductOrder() {
+  const searchParams = usePathname();
+
+  const searh = searchParams.split("/").splice(3, 3).join("");
+
+  const params = {
+    id: searh,
+  };
+
+  const { data } = getSingleProduct({ params });
+
+  const singleProduct = data as ProductTypes;
+
+  const getPrice = singleProduct?.product_price;
+  const getTitle = singleProduct?.product_title;
+
   const [paymentTabActive, setPaymentTabActive] = useState(true);
   const [reviewTabActive, setreviewTabActive] = useState(true);
 
   const onLoadRef = useRef<HTMLInputElement | null>(null);
   const paymentRef = useRef<HTMLInputElement | null>(null);
   const reviewRef = useRef<HTMLInputElement | null>(null);
-
-  const searchParams = useSearchParams();
-
-  const getPrice = searchParams.get("price");
-  const getTitle = searchParams.get("title");
-  const getDescription = searchParams.get("desc");
-
-  console.log({ getPrice, getTitle, getDescription });
 
   useEffect(() => {
     if (onLoadRef.current) {
@@ -45,6 +53,9 @@ export const Orders = () => {
     }
   };
 
+  console.log({ data });
+
+  console.log({ searh });
   return (
     <section className="w-[80vw] mx-auto">
       <div className="mt-10 ">
@@ -288,4 +299,4 @@ export const Orders = () => {
       </div>
     </section>
   );
-};
+}

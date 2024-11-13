@@ -15,7 +15,7 @@ export default function Pages() {
   return (
     <section className="w-[80vw] mx-auto">
       <div className="">
-        <Navbar items={parsedItem} />
+        <Navbar />
       </div>
       {parsedItem && parsedItem.length > 0
         ? parsedItem.map((savedItem, index) => (

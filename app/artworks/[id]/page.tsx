@@ -86,15 +86,7 @@ export default function Page({ params }: { params: { id: string } }) {
             <p className="text-slate-500">{singleProductData?.product_author?.artist_name}</p>
             <p className="text-slate-500">{singleProductData?.product_about}</p>
             <div className="flex flex-row gap-6">
-              <Link
-                href={{
-                  pathname: "/orders",
-                  query: {
-                    title: singleProductData?.product_title,
-                    price: singleProductData?.product_price,
-                  },
-                }}
-              >
+              <Link href={`/artworks/orders/${params.id}`}>
                 <button className="py-3 px-6 bg-black text-white font-semibold rounded-full hover:scale-105">{`Purchase at $${singleProductData?.product_price} `}</button>
               </Link>
               <button className="py-3 px-6 rounded-full outline outline-black font-semibold hover:scale-105">
@@ -115,7 +107,7 @@ export default function Page({ params }: { params: { id: string } }) {
       <section className="mt-20 flex flex-col">
         <h3 className="text-3xl">About Author</h3>
         <span className="flex w-full h-[.08rem] bg-slate-200 my-2"></span>
-        <Link href={`/artists/${singleAuthorData?._id}`}>
+        <Link prefetch={true} href={`/artists/${singleAuthorData?._id}`}>
           <div>
             <img src={singleAuthorData?.imageUrl} width={100} height={100} alt="" />
           </div>
@@ -131,7 +123,7 @@ export default function Page({ params }: { params: { id: string } }) {
         <div className="flex gap-4">
           {singleAuthorData && singleAuthorData?.authorProductsImage?.length > 0
             ? singleAuthorData?.authorProductsImage?.map((author, index) => (
-                <Link href={`/artworks/${author?._doc?._id}`} key={index}>
+                <Link href={`/artworks/${author?._doc?._id}`} key={index} prefetch={true}>
                   <div className="w-64 h-44 rounded-xl">
                     <img
                       src={author.singleProductImg}

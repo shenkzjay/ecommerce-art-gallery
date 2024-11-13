@@ -6,10 +6,14 @@ import { SignUpUser } from "@/app/api/signup/signup";
 import Link from "next/link";
 import { Navbar } from "@/component/navbar";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 export default function SignUp() {
   const signupUser = SignUpUser();
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+
   const { register: registerSignup, handleSubmit: handleSignupSubmit } = useForm<SignupTypes>();
 
   const SignupSubmit: SubmitHandler<SignupTypes> = (data) => {
@@ -18,7 +22,6 @@ export default function SignUp() {
     signupUser.mutate(data, {
       onSuccess: async (data) => {
         console.log(data, "signup successfull");
-        router.replace("/login");
       },
 
       onError: async (error) => {
@@ -29,7 +32,7 @@ export default function SignUp() {
 
   return (
     <section className="w-[85vw] mx-auto ">
-      <Navbar items={[]} />
+      <Navbar />
       <div className="flex flex-col mt-24 justify-center items-center">
         <form
           className=" w-[30vw] p-6 bg-[#f4f4f4] rounded-xl"

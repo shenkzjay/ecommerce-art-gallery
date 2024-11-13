@@ -6,32 +6,46 @@ import { LoginPropTypes } from "@/types/types";
 import Link from "next/link";
 import { Navbar } from "@/component/navbar";
 import { useRouter } from "next/navigation";
-import AuthContext from "../context/AuthProvider";
+import AuthContext from "../utils/AuthProvider";
 import { useContext, useEffect } from "react";
+
+import { useSearchParams } from "next/navigation";
 
 export default function SignIn() {
   const signInUser = SignInUser();
 
   const router = useRouter();
 
+  const searchParams = useSearchParams();
+
+  const getPrice = searchParams.get("price");
+  const getTitle = searchParams.get("title");
+  const getDescription = searchParams.get("desc");
+
+  const context = useContext(AuthContext)!;
+
+  if (!context) {
+    console.log("no context");
+  }
+
+  const { setUserData, setAuth, userData } = context;
+
+  useEffect(() => {
+    console.log({ userData });
+  }, []);
+
+  // console.log(userData?.accessToken);
+
   const { register: registerLogin, handleSubmit: handleLoginSubmit } = useForm<LoginPropTypes>();
-
-  const context = useContext(AuthContext);
-
-  if (!context) return;
-
-  const { setUserData, setAuth, auth } = context;
 
   //login
   const onSubmit: SubmitHandler<LoginPropTypes> = (data) => {
-    console.log(data, "login");
-
     signInUser.mutate(data, {
       onSuccess: async (data) => {
         console.log(data, "onSucess");
+        // router.push("/artworks/orders");
+        setUserData(data);
         setAuth(data.accessToken);
-        setUserData(data.userData);
-        router.replace("/");
       },
 
       onError: async (error) => {
@@ -42,7 +56,7 @@ export default function SignIn() {
 
   return (
     <section className="w-[85vw] mx-auto">
-      <Navbar items={[]} />
+      <Navbar />
       <div className=" flex flex-col justify-center items-center mt-24">
         <form
           className="w-[30vw] p-6 bg-[#f4f4f4] rounded-xl"
@@ -82,7 +96,16 @@ export default function SignIn() {
 
             <div>
               <p className="text-slate-400">Not yet signed up? </p>
-              <Link href="/signup" className="underline">
+              <Link
+                href={{
+                  pathname: "/signup",
+                  query: {
+                    title: getTitle,
+                    price: getPrice,
+                  },
+                }}
+                className="underline"
+              >
                 Sign up
               </Link>
             </div>

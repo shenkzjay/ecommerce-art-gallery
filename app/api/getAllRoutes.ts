@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
-import AuthContext from "../context/AuthProvider";
+import AuthContext from "../utils/AuthProvider";
 import { redirect } from "next/navigation";
 
 // Hook to get all routes
